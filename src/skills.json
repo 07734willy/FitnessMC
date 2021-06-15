@@ -1,0 +1,12 @@
+[
+	{
+		"name": "swords",
+		"rates": {
+			"Pushup": 1
+		},
+		"bonuses": {
+			"willy": 0
+		}
+	}
+]
+
