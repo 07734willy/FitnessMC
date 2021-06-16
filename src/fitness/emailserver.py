@@ -36,7 +36,7 @@ class EmailServer(SMTPServer):
 		print("Email server started")
 		super().bind(*args, **kwargs)
 
-SERVER = EmailServer((IP_ADDRESS, 1025), None)
+SERVER = EmailServer((IP_ADDRESS, 25), None)
 
 def start_email_server():
 	asyncore.loop()
