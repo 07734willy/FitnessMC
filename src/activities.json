@@ -1,0 +1,6 @@
+{
+	"Pushup": {
+		"decay_rate": 0.7,
+		"multiplier": 5
+	}
+}
