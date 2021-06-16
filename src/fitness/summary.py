@@ -114,3 +114,6 @@ def print_workout_diff(old_workout_log, new_workout_log):
 		print_df_changes(gained_rows, "The following activities were added since the last sync:")
 	if not lost_rows.empty:
 		print_df_changes(lost_rows, "The following activities were removed from the last sync:")
+
+	if gained_rows.empty and lost_rows.empty:
+		send_msg("No new changes in uploaded workout log")

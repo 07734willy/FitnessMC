@@ -1,14 +1,8 @@
 from collections import namedtuple
+from .filehelper import get_data_file_path, read_csv_data
 import shelve
-
-LAST_WORKOUT = shelve.open("player.db")
 
 Player = namedtuple("Player", ["minecraft_id", "discord_id", "gym_id"])
 
-PLAYER_BY_GYM_ID = {
-	"willyGYM": Player("willyMC", "willyDISCORD", "willyGYM"),
-	"peterGYM": Player("peterMC", "peterDISCORD", "peterGYM"),
-}
-
-for gym_id, player in PLAYER_BY_GYM_ID.items():
-	assert gym_id == player.gym_id
+PLAYER_BY_GYM_ID = {data['gym_id']: Player(**data) for data in read_csv_data("players.csv")}
+LAST_WORKOUT = shelve.open(get_data_file_path("workouts.dat"))

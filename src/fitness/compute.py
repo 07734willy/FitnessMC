@@ -1,11 +1,8 @@
 from .minecraft import set_mcmmo_skill
-import json
+from .filehelper import read_json_config
 
-with open("activities.json", "r") as f:
-	ACTIVITY_TABLE = json.load(f)
-
-with open("skills.json", "r") as f:
-	SKILL_TABLE = json.load(f)
+ACTIVITY_TABLE = read_json_config("activities.json")
+SKILL_TABLE   = read_json_config("skills.json")
 
 def decay_by_x_agg(x):
 	def agg(values):
