@@ -4,8 +4,11 @@ from base64 import b64decode
 
 import asyncio
 import asyncore
+import os
 
 from .csvhandler import handle_csv
+
+IP_ADDRESS = os.getenv("FITNESSMC_MAIL_IP_ADDRESS")
 
 TARGET_SUBJECT = ""
 TARGET_SENDER = ""
@@ -16,25 +19,24 @@ class EmailServer(SMTPServer):
 		message = parser.parsebytes(data)
 		
 		subject = message.get("Subject")
+		
+		"""
 		if subject != TARGET_SUBJECT or mailfrom != TARGET_SENDER:
 			return
-
-		#print(peer, mailfrom, rcpttos)
+		"""
 
 		for part in message.walk():
 			if part.get_content_disposition() == 'attachment':
 				attachment_data = b64decode(part.get_payload())
 				attachment_text = attachment_data.decode('utf-8')
 
-				asyncio.run(handle_csv(attachment_text))
-
-			# print(part.get_content_disposition())
+				handle_csv(attachment_text)
 
 	def bind(self, *args, **kwargs):
 		print("Email server started")
 		super().bind(*args, **kwargs)
 
-SERVER = EmailServer(('localhost', 1025), None)
+SERVER = EmailServer((IP_ADDRESS, 1025), None)
 
 def start_email_server():
 	asyncore.loop()

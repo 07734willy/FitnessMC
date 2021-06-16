@@ -5,22 +5,22 @@ from .compute import calculate_activity_xp, calculate_skills_xp, CALCULATOR_TABL
 from .player import LAST_WORKOUT
 from .discordlink import send_msg
 
-async def print_summary(new_workout_log, new_activity_xp, new_skills_xp, player):
+def print_summary(new_workout_log, new_activity_xp, new_skills_xp, player):
 	empty_df = pd.DataFrame(columns=new_workout_log.columns)
 	old_workout_log = LAST_WORKOUT.get(player.gym_id, empty_df)
 	
-	await print_workout_diff(old_workout_log, new_workout_log)
+	print_workout_diff(old_workout_log, new_workout_log)
 
 	old_activity_xp = calculate_activity_xp(old_workout_log)
-	await print_activity_xp_diff(old_activity_xp, new_activity_xp)
+	print_activity_xp_diff(old_activity_xp, new_activity_xp)
 
 	old_skills_xp = calculate_skills_xp(old_activity_xp, player)
-	await print_skills_xp_diff(old_skills_xp, new_skills_xp)
+	print_skills_xp_diff(old_skills_xp, new_skills_xp)
 
 	unsupported_exercises = set(new_workout_log['Exercise'].unique()) - set(CALCULATOR_TABLE)
 	if unsupported_exercises:
 		formatted_exercises = ", ".join(map(enclose_in_monospace, sorted(unsupported_exercises)))
-		await send_msg(f"The following exercises were not accounted for: {formatted_exercises}")
+		send_msg(f"The following exercises were not accounted for: {formatted_exercises}")
 
 def diff_xp(old_xp, new_xp):
 	raw_xp_diff = {name: new_val - old_xp.get(name, 0)
@@ -33,28 +33,28 @@ def xp_diff_to_df(columns, value_format, xp_diff):
 	df = pd.DataFrame(lines, columns=columns)
 	return df
 
-async def print_xp_diff(header, columns, value_format, old_xp, new_xp):
+def print_xp_diff(header, columns, value_format, old_xp, new_xp):
 	xp_diff = diff_xp(old_xp, new_xp)
 	
 	if not xp_diff:
 		return
 
 	df = xp_diff_to_df(columns, value_format, xp_diff)
-	await print_df(df, header=header)
+	print_df(df, header=header)
 
-async def print_skills_xp_diff(old_skills_xp, new_skills_xp):
+def print_skills_xp_diff(old_skills_xp, new_skills_xp):
 	header = "Activity XP Gains:"
 	columns = ['Skill', 'XP']
 	value_format = "{:+}"
 
-	await print_xp_diff(header, columns, value_format, old_skills_xp, new_skills_xp)
+	print_xp_diff(header, columns, value_format, old_skills_xp, new_skills_xp)
 
-async def print_activity_xp_diff(old_activity_xp, new_activity_xp):
+def print_activity_xp_diff(old_activity_xp, new_activity_xp):
 	header = "Activity XP Gains:"
 	columns = ['Activity', 'XP']
 	value_format = "{:+.2f}"
 
-	await print_xp_diff(header, columns, value_format, old_activity_xp, new_activity_xp)
+	print_xp_diff(header, columns, value_format, old_activity_xp, new_activity_xp)
 
 def enclose_in_codeblock(data):
 	return f"```\n{data}\n```"
@@ -79,12 +79,12 @@ def get_row_split(df, limit):
 	print('line size', line_size)
 	return limit // line_size
 
-async def print_df(df, header=None):
+def print_df(df, header=None):
 	size_limit = 1980
 	text = format_df(df, header=header)
 
 	if len(text) <= size_limit:
-		await send_msg(text)
+		send_msg(text)
 		return
 
 	limit = size_limit - len(header or "") - 1 - (len(text) - len(df_to_string(df)))
@@ -92,17 +92,17 @@ async def print_df(df, header=None):
 	print('row count', row_count)
 
 	subset_df = df.head(row_count)
-	await send_msg(format_df(subset_df, header=header))
-	await print_df(df.tail(-row_count)) # BUG: row_count CAN be 0, if header is large enough
+	send_msg(format_df(subset_df, header=header))
+	print_df(df.tail(-row_count)) # BUG: row_count CAN be 0, if header is large enough
 
 
-async def print_df_changes(df, comment):
-	await print_df(df, header=comment)
+def print_df_changes(df, comment):
+	print_df(df, header=comment)
 
 def diff_df(df1, df2):
 	return df1.merge(df2.drop_duplicates(), how="left", indicator=True)
 
-async def print_workout_diff(old_workout_log, new_workout_log):
+def print_workout_diff(old_workout_log, new_workout_log):
 	diff1 = diff_df(new_workout_log, old_workout_log)
 	diff2 = diff_df(old_workout_log, new_workout_log)
 
@@ -111,6 +111,6 @@ async def print_workout_diff(old_workout_log, new_workout_log):
 	kept_rows   = diff1[diff1['_merge'] == 'both'].drop('_merge', 1)
 
 	if not gained_rows.empty:
-		await print_df_changes(gained_rows, "The following activities were added since the last sync:")
+		print_df_changes(gained_rows, "The following activities were added since the last sync:")
 	if not lost_rows.empty:
-		await print_df_changes(lost_rows, "The following activities were removed from the last sync:")
+		print_df_changes(lost_rows, "The following activities were removed from the last sync:")

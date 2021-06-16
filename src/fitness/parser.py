@@ -58,29 +58,3 @@ def parse_gym_username(df):
 	link = df.iloc[0]['Link']
 	return re.search(r"@([^/]+)/", link).group(1)
 
-
-"""
-def read_csv_data(data):
-	stream = StringIO(data)
-	reader = csv.DictReader(stream)
-
-	gym_name = parse_gym_username(next(iter(reader))['link'])
-
-	session = Session()
-
-	for row in reader:
-		if row['Date']:
-			workout_date = datetime.strptime(row['Date'], "%a %b %d %Y").date()
-
-		session.add(Activity(
-			int(row['Workout #']),
-			workout_date,
-			row['Excercise'],
-			int(row['Set #']),
-			int(row['Reps']),
-			float(row['Weight']),
-		))
-
-	return session
-
-"""
