@@ -44,11 +44,10 @@ def calculate_activity_xp(workout_log):
 		activity_xp[activity_name] = func(df)
 	return activity_xp
 
-def update_skills_xp(activity_xp, player):
-
-	for skill_data in SKILL_TABLE:
-		xp = sum(activity_xp[activity_name] * rate for activity_name, rate in skill_data['rates'].items())
-		xp += skill_data['bonuses'].get(player.minecraft_id, 0)
-		print("setting xp", xp, skill_data['name'])
+def calculate_skills_xp(activity_xp, player):
+	return {skill_data['name']: int(sum(activity_xp[activity_name] * rate 
+			for activity_name, rate in skill_data['rates'].items()
+		) + skill_data['bonuses'].get(player.minecraft_id, 0))
+		for skill_data in SKILL_TABLE}
 		# set_mcmmo_skill(player, skill_data['name'], xp)
 

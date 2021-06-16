@@ -2,8 +2,8 @@ import os
 
 from mcrcon import MCRcon
 
-MCRCON_IP_ADDRESS = os.getenv("MCRCON_IP_ADDRESS")
-MCRCON_IP_ADDRESS = os.getenv("MCRCON_PASSWORD")
+MCRCON_IP_ADDRESS = os.getenv("FITNESSMC_MCRCON_IP_ADDRESS")
+MCRCON_IP_ADDRESS = os.getenv("FITNESSMC_MCRCON_PASSWORD")
 
 def set_mcmmo_skill(player, skill_name, xp):
 	with MCRcon(MCRCON_IP_ADDRESS, MCRCON_PASSWORD):

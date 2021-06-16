@@ -1,10 +1,11 @@
+from io import StringIO
 import pandas as pd
 
 import re
 
 KG_TO_LB = 2.20462
 
-def get_headers(df):
+def extract_headers(df):
 	gym_hero_headers = df[pd.notnull(df['Workout duration'])]
 	gym_hero_headers = gym_hero_headers.drop(
 		columns=[
@@ -21,7 +22,7 @@ def get_headers(df):
 	gym_hero_headers['Date'] = pd.to_datetime(df['Date'])
 	return gym_hero_headers
 
-def get_content(df):
+def extract_content(df):
 	gym_hero_content = df[pd.notnull(df['Reps'])]
 	gym_hero_content = gym_hero_content.drop(
 		columns=[
@@ -33,11 +34,11 @@ def get_content(df):
 		)
 	return gym_hero_content
 
-def get_full_log(filepath):
-	df = pd.read_csv(filepath)
+def standardize_workout_log(data):
+	df = pd.read_csv(StringIO(data))
 
-	gym_hero_headers = get_headers(df)
-	gym_hero_content = get_content(df)
+	gym_hero_headers = extract_headers(df)
+	gym_hero_content = extract_content(df)
 
 	gym_hero_merged = pd.merge(
 		gym_hero_content,
@@ -53,7 +54,7 @@ def get_full_log(filepath):
 
 	return gym_hero_merged
 
-def get_log_username(df):
+def parse_gym_username(df):
 	link = df.iloc[0]['Link']
 	return re.search(r"@([^/]+)/", link).group(1)
 
