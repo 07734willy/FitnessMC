@@ -4,7 +4,7 @@ import json
 def decay_by_x_agg(x):
 	def agg(values):
 		values = sorted(values, reverse=True)
-		print(sum(x**i * v for i, v in enumerate(values)))
+		# print(sum(x**i * v for i, v in enumerate(values)))
 		return sum(x**i * v for i, v in enumerate(values))
 	return agg
 
