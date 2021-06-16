@@ -12,6 +12,7 @@ IP_ADDRESS = os.getenv("FITNESSMC_MAIL_IP_ADDRESS")
 
 TARGET_SUBJECT = ""
 TARGET_SENDER = ""
+TARGET_RCPT_NAME = "fitnessmc"
 
 class EmailServer(SMTPServer):
 	def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
@@ -19,6 +20,13 @@ class EmailServer(SMTPServer):
 		message = parser.parsebytes(data)
 		
 		subject = message.get("Subject")
+
+		if len(rcpttos) != 1:
+			return
+
+		rcpt_name = rcpttos[0].split("@", 1)[0]
+		if rcpt_name != TARGET_RCPT_NAME:
+			return
 		
 		"""
 		if subject != TARGET_SUBJECT or mailfrom != TARGET_SENDER:
