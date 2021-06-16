@@ -2,36 +2,42 @@ from email.parser import BytesParser
 from smtpd import SMTPServer
 from base64 import b64decode
 
+import asyncio
+import asyncore
+
+from .csvhandler import handle_csv
+
+TARGET_SUBJECT = ""
+TARGET_SENDER = ""
+
 class EmailServer(SMTPServer):
 	def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
 		parser = BytesParser()
 		message = parser.parsebytes(data)
-
-		print(message.get("From"))
-		print(message.get("To"))
-		print(message.get("Subject"))
-		print(message.get("Date"))
-
-		print(peer, mailfrom, rcpttos)
-
-		print(list(message.items()))
 		
+		subject = message.get("Subject")
+		if subject != TARGET_SUBJECT or mailfrom != TARGET_SENDER:
+			return
+
+		#print(peer, mailfrom, rcpttos)
+
 		for part in message.walk():
 			if part.get_content_disposition() == 'attachment':
 				attachment_data = b64decode(part.get_payload())
 				attachment_text = attachment_data.decode('utf-8')
-				print(attachment_text)
 
-			print(part.get_content_disposition())
+				asyncio.run(handle_csv(attachment_text))
 
-def main():
-	EmailServer(('localhost', 1025), None)
-	import asyncore
+			# print(part.get_content_disposition())
 
-	try:
-		asyncore.loop()
-	except KeyboardInterrupt:
-		pass
+	def bind(self, *args, **kwargs):
+		print("Email server started")
+		super().bind(*args, **kwargs)
 
-if __name__ == "__main__":
-	main()
+SERVER = EmailServer(('localhost', 1025), None)
+
+def start_email_server():
+	asyncore.loop()
+
+def stop_email_server():
+	SERVER.close()
