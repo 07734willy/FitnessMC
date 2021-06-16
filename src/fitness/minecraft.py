@@ -15,5 +15,5 @@ def update_player_skills(player, skills_xp):
 			set_mcmmo_skill(mcr, player, skill_name, xp)
 
 def set_mcmmo_skill(mcr, player, skill_name, xp):
-	mcr.command(f"/skillreset {player.minecraft_id} {skill_name}")
-	mcr.command(f"/addxp {player.minecraft_id} {skill_name} {xp}")
+	mcr.command(f"skillreset {player.minecraft_id} {skill_name}")
+	mcr.command(f"addxp {player.minecraft_id} {skill_name} {xp}")
