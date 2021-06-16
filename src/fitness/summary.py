@@ -2,10 +2,13 @@ from textwrap import indent
 import pandas as pd
 
 from .compute import calculate_activity_xp, calculate_skills_xp, CALCULATOR_TABLE
+from .discordlink import send_msg, get_discord_member
 from .player import LAST_WORKOUT
-from .discordlink import send_msg
 
 def print_summary(new_workout_log, new_activity_xp, new_skills_xp, player):
+	member = get_discord_member(player.discord_id)
+	send_msg(f"**Report details for workout log of {member.mention}**")
+
 	empty_df = pd.DataFrame(columns=new_workout_log.columns)
 	old_workout_log = LAST_WORKOUT.get(player.gym_id, empty_df)
 	
